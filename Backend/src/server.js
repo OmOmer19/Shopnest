@@ -16,10 +16,10 @@ connectToDB()
 
 // Importing routes
 const productRoutes = require("./routes/productRoutes");
-const userRoutes = require('./routes/userRoutes')
+const authRoutes = require('./routes/authRoutes')
 
 app.use("/api/products", productRoutes);
-app.use("/api/users", userRoutes)
+app.use("/api/auth",authRoutes)
 
 app.get("/", (req, res) => {
   res.send("ShopNest API is working fine!");

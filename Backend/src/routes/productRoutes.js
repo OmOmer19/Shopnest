@@ -1,13 +1,18 @@
 const express = require("express");
 const router = express.Router();
-
-// importing controller
-const productController = require('../controllers/productController')
+const { protect } = require("../middlewares/authMiddleware")
+const { allowRoles } = require("../middlewares/roleMiddleware")
+const { createProduct, getAllProducts } = require("../controllers/productController")
 
 // Route: GET /api/products → get all products
-router.get("/", productController.getAllProducts);
+router.get("/",getAllProducts);
 
 // Route: POST /api/products → create a new product
-router.post("/", productController.createProduct);
+router.post(
+  "/",
+  protect,           // user must be logged in
+  allowRoles("vendor", "admin"), // only vendor/admin can create product
+  createProduct
+)
 
 module.exports = router;
