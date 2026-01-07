@@ -4,16 +4,38 @@ import Navbar from "./components/Navbar";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import { Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
 
 function App() {
   return(
     <>
     <Navbar />
     <Routes>
-      <Route path="/" element={<ProductsGrid/>} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/checkout" element={<Checkout />} />
+      {/* Public routes */}
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/register" element={<Register />} />
+
+      {/* Protected routes */}
+      <Route path="/" 
+      element={ <ProtectedRoute>
+        <ProductsGrid/>
+      </ProtectedRoute>} />
+      
+      <Route path="/cart" 
+      element={ <ProtectedRoute>
+        <Cart />
+      </ProtectedRoute>} />
+
+      <Route path="/checkout" 
+      element={ <ProtectedRoute>
+        <Checkout />
+      </ProtectedRoute>} />
     </Routes>
+
     </>
   )
 }
