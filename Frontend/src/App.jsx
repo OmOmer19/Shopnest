@@ -7,6 +7,8 @@ import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import VendorDashboard from "./pages/VendorDashboard";
+import RoleRoute from "./routes/RoleRoute";
 
 
 function App() {
@@ -34,6 +36,22 @@ function App() {
       element={ <ProtectedRoute>
         <Checkout />
       </ProtectedRoute>} />
+
+      {/* role based routes */}
+      <Route path="/vendor-dashboard"
+      element={ <ProtectedRoute>
+        <RoleRoute roles={["vendor"]}>
+          <VendorDashboard />
+        </RoleRoute>
+      </ProtectedRoute>} />
+
+      {/* <Route path="/admin-dashboard"
+      element={ <ProtectedRoute>
+        <RoleRoute roles={["admin"]}>
+          <VendorDashboard />
+        </RoleRoute>
+      </ProtectedRoute>} /> */}
+
     </Routes>
 
     </>
