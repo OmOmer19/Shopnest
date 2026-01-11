@@ -92,7 +92,7 @@ const VendorDashboard = () => {
           {/* Placeholder content */}
           <div className="mt-10 bg-white rounded-xl shadow-md p-6">
             <p className="text-gray-500">
-              Vendor analytics, product tables, and actions will appear here.
+              Vendor analytics, product tables and actions will appear here.
             </p>
           </div>
 
