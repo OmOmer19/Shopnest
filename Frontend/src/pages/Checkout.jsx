@@ -18,10 +18,15 @@ const Checkout = () => {
   };
 
   return (
-    <div className="min-h-screen px-6 py-8 bg-linear-to-r from-purple-400 via-pink-400 to-red-400">
-      <h2 className="text-3xl font-bold text-center mb-6">Checkout</h2>
+    <div className="min-h-screen bg-gray-50">
+      {/* header */}
+      <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 py-8 px-4 text-center mb-8">
+         <h1 className="text-3xl font-extrabold text-white">🧾 Checkout</h1>
+          <p className="text-white/80 mt-1">Complete your order</p>
+     </div>
 
-      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+
+      <div className="max-w-4xl mx-auto px-6 pb-8 grid md:grid-cols-2 gap-6">
         {/* Address Form */}
         <Card className="shadow-xl">
           <h3 className="text-xl font-semibold mb-4">Delivery Address</h3>

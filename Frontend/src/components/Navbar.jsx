@@ -39,7 +39,8 @@ const Navbar = () => {
                     text-white shadow-lg">
 
       {/* Brand / Logo */}
-      <Link to="/" className="text-xl md:text-2xl font-bold tracking-tight">
+      <Link to={user?.role === "vendor" ? "/vendor-dashboard" : "/"}
+      className="text-xl md:text-2xl font-bold tracking-tight">
         🛍️ ShopNest
       </Link>
 
