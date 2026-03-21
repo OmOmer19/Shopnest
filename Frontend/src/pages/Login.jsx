@@ -2,62 +2,105 @@
 import { useState } from "react";
 import api from "../api/api";
 import { useAuth } from "../context/AuthContext";
-import { Form, Input, Button, Card, message } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
-  const [loading, setLoading] = useState(false); // loading state for button
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // context to store user + token
+  const { login } = useAuth();
 
-  // Handle form submission
   const onFinish = async (values) => {
-    setLoading(true); // show spinner
+    setLoading(true);
     try {
-      // Call backend API to login user
       const res = await api.post("/auth/login", values);
-
-      // Store returned user data and JWT in context
-      const {token, ...userData} = res.data.data
-      login(userData, token) // Saving user info + JWT in AuthContext
-
-      // Show success message and redirect to home
+      const { token, ...userData } = res.data.data;
+      login(userData, token);
       message.success("Login successful!");
-
-      // redirecting based on role
-      if(userData.role === "vendor"){
-        navigate("/vendor-dashboard")
-      } 
-      else if(userData.role === "admin"){
-        navigate("/admin-dashboard")
-      }else{
-      navigate("/") //normal user
-    }
-  }
-     catch (error) {
-      // Show error if login fails
+      if (userData.role === "vendor") {
+        navigate("/vendor-dashboard");
+      } else if (userData.role === "admin") {
+        navigate("/");
+      } else {
+        navigate("/");
+      }
+    } catch (error) {
       message.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    // Full screen gradient background with centered form
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-purple-400 via-pink-400 to-red-400 px-4">
-      {/* Motion animation for the card */}
+    <div className="min-h-screen flex flex-col md:flex-row">
+
+      {/* Left side — branding */}
       <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full max-w-md"
+        className="w-full md:w-1/2 bg-gradient-to-br from-purple-600 via-pink-500 to-red-400
+                   flex flex-col items-center justify-center p-4 md:p-12 text-white
+                   min-h-[120px] sm:min-h-[200px] md:min-h-screen"
       >
-        {/* Login Card with blur and shadow */}
-        <Card className="rounded-xl shadow-2xl p-6 bg-white/90 backdrop-blur-md">
-          <h2 className="text-3xl font-bold text-center mb-6 text-purple-700">
-            Login
-          </h2>
+        {/* Logo — always visible */}
+        <div className="text-3xl md:text-5xl font-extrabold tracking-tight">
+          🛍️ ShopNest
+        </div>
+
+        {/* Everything below hidden on mobile */}
+        <div className="hidden sm:flex flex-col items-center w-full max-w-sm">
+          <p className="text-xl md:text-2xl font-semibold text-center mt-3 mb-4">
+            Your One-Stop Shopping Destination
+          </p>
+          <p className="text-white/80 text-center text-base md:text-lg mb-6">
+            Discover thousands of products from top vendors across India.
+            Shop smart, shop easy!
+          </p>
+
+          {/* Features list */}
+          <div className="space-y-3 w-full">
+            {[
+              "🚀 Fast & Secure Checkout",
+              "🏪 500+ Trusted Vendors",
+              "🎁 Exclusive Deals Every Day",
+              "📦 Fast Delivery Across India",
+            ].map((feature, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 * i, duration: 0.5 }}
+                className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3"
+              >
+                <span className="text-base">{feature}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Right side — login form */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full md:w-1/2 flex items-center justify-center
+           bg-gray-50 px-6 sm:px-8 py-8 min-h-screen md:min-h-0"
+      >
+        <div className="w-full max-w-md">
+
+          {/* Form header */}
+          <div className="mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+              Welcome back! 👋
+            </h2>
+            <p className="text-gray-500 mt-2">
+              Login to continue shopping
+            </p>
+          </div>
 
           {/* Login form */}
           <Form
@@ -65,56 +108,74 @@ const Login = () => {
             layout="vertical"
             onFinish={onFinish}
             autoComplete="off"
+            size="large"
           >
-            {/* Email input */}
+            {/* Email */}
             <Form.Item
               name="email"
-              label="Email"
+              label={<span className="font-semibold text-gray-700">Email</span>}
               rules={[
                 { required: true, message: "Please input your email!" },
                 { type: "email", message: "Enter a valid email!" },
               ]}
             >
-              <Input prefix={<MailOutlined />} placeholder="Email" />
+              <Input
+                prefix={<MailOutlined className="text-purple-400" />}
+                placeholder="Enter your email"
+                className="rounded-lg"
+              />
             </Form.Item>
 
-            {/* Password input */}
+            {/* Password */}
             <Form.Item
               name="password"
-              label="Password"
-              rules={[{ required: true, message: "Please input your password!" }]}
+              label={<span className="font-semibold text-gray-700">Password</span>}
+              rules={[
+                { required: true, message: "Please input your password!" }
+              ]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+              <Input.Password
+                prefix={<LockOutlined className="text-purple-400" />}
+                placeholder="Enter your password"
+                className="rounded-lg"
+              />
             </Form.Item>
 
             {/* Submit button */}
-            <Form.Item>
+            <Form.Item className="mt-6">
               <Button
                 type="primary"
                 htmlType="submit"
                 block
                 loading={loading}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="h-12 rounded-lg text-base font-semibold
+                           bg-gradient-to-r from-purple-600 to-pink-500
+                           border-none hover:opacity-90"
               >
-                Login
+                Login to ShopNest
               </Button>
             </Form.Item>
 
-            {/* Redirect to register if new user */}
+            {/* Divider */}
+            <div className="text-center text-gray-400 my-4">
+              ── or ──
+            </div>
+
+            {/* Register link */}
             <p className="text-center text-gray-500">
               Don't have an account?{" "}
-              <span
-                className="text-purple-600 cursor-pointer hover:underline"
-                onClick={() => navigate("/register")}
+              <Link
+                to="/register"
+                className="text-purple-600 font-semibold hover:underline"
               >
-                Register
-              </span>
+                Register for free
+              </Link>
             </p>
           </Form>
-        </Card>
+        </div>
       </motion.div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

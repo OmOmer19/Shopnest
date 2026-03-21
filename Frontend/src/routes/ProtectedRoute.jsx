@@ -5,7 +5,16 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, token } = useAuth();
+  const { user, token, loading } = useAuth();
+
+  // waiting for auth state to load before checking
+if(loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-purple-600 text-xl font-semibold">Loading...</p>
+    </div>
+  )
+}
 
   // If user or token is missing → not authenticated
   if (!user || !token) {

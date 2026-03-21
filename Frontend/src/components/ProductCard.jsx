@@ -15,16 +15,16 @@ const ProductCard = ({ product }) => {
     >
       <Badge.Ribbon
         text={product.vendor.name}
-        color="green"
+        color="purple"
       >
         <Card
           hoverable
           className="overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
           cover={
-            <div className="h-48 w-full overflow-hidden rounded-t-lg">
+            <div className="h-48 w-full overflow-hidden rounded-t-lg bg-gray-50">
               <img
                 alt={product.name}
-                src={product.images[0]}
+                src={product.images?.[0] || "/placeholder.png"} //fallback if no img
                 className="w-full h-full object-contain transform transition-transform duration-300 hover:scale-110"
               />
             </div>
@@ -32,17 +32,45 @@ const ProductCard = ({ product }) => {
         >
             {/* product title,price, rating and add to cart buttton */}
           <Meta
-            title={product.name}
+            title={
+              <span className="text-gray-800 font-semibold text-base">
+                {product.name}
+              </span>
+            }
             description={
                 <div className="mt-2">
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex justify-between items-center mb-3">
+                      {/* price */}
                         <span className="text-purple-700 font-bold text-lg">₹{product.price}</span>
-                        <span className="flex items-center text-yellow-400 font-semibold">
-                            ⭐ {product.rating}
-                        </span>
+                        {/* rating — only show if > 0 */}
+                  {product.rating > 0 ? (
+                    <span className="flex items-center gap-1 text-yellow-500 font-semibold text-sm">
+                      ⭐ {product.rating}
+                    </span>
+                  ) : (
+                    <span className="text-gray-400 text-xs">
+                      No ratings yet
+                    </span>
+                  )}
                     </div>
-                    <Button type="primary" size="medium" onClick={() => addToCart(product)}
-                    className="w-full bg-purple-600 hover:bg-purple-700 transition-colors duration-300"
+                  {/* stock indicator */}
+                  {product.stock < 10 && product.stock > 0 && (
+                  <p className="text-orange-500 text-xs mb-2 font-medium">
+                    ⚠️ Only {product.stock} left!
+                  </p>
+                  )}
+                  {/* out of stock */}
+                  {product.stock === 0 && (
+                  <p className="text-red-500 text-xs mb-2 font-medium">
+                    ❌ Out of Stock
+                  </p>
+                  )}
+                  {/* add to cart */}
+                    <Button type="primary" 
+                            size="medium"
+                            onClick={() => addToCart(product)}
+                            disabled={product.stock ===0} //disable if out of stock
+                    className="w-full border-none hover:opacity-90 transition-all duration-300"
                     >Add to Cart
                     </Button>
                 </div>
@@ -51,8 +79,7 @@ const ProductCard = ({ product }) => {
         </Card>
       </Badge.Ribbon>
     </motion.div>
-  );
-};
-
+  )
+}
 
 export default ProductCard;

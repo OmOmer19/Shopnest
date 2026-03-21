@@ -8,6 +8,7 @@ const AuthContext = createContext()
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // stores logged-in user info
   const [token, setToken] = useState(null); // stores JWT token
+  const [loading, setLoading] = useState(true); // loading state while checking localStorage
 
   // Loading auth state from localStorage on app start
   useEffect(() => {
@@ -17,6 +18,7 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
     }
+    setLoading(false) // done loading auth state
   }, [])
   //saving auth state to localStorage whenever it changes
   useEffect(() => {
@@ -40,7 +42,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
   }
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   )

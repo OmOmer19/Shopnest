@@ -29,109 +29,184 @@ const Register = () => {
       // redirecting based on role
       if(userData.role === "vendor"){
         navigate("/vendor-dashboard")
-      } 
-        navigate("/") // normal user
+      } else {
+        navigate("/")     
+      }
     } 
     catch (error) {
       // Showing error if registration fails
       message.error(error.response?.data?.message || "Registration failed");
     }
-    setLoading(false);
+    finally {
+      setLoading(false)
+    }
   };
 
   return (
-    // Full screen gradient background with centered form
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-r from-purple-400 via-pink-400 to-red-400 px-4">
-      {/* Card animation using Framer Motion */}
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-md"
-      >
-        {/* Registration Card with blur and shadow */}
-        <Card className="rounded-xl shadow-2xl p-6 bg-white/90 backdrop-blur-md">
-          <h2 className="text-3xl font-bold text-center mb-6 text-purple-700">
-            Register
-          </h2>
+    <div className="min-h-screen flex flex-col md:flex-row">
 
-          {/* Registration form */}
+      {/* Left side — branding (same as login) */}
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full md:w-1/2 bg-gradient-to-br from-purple-600 via-pink-500 to-red-400
+                   flex flex-col items-center justify-center p-4 md:p-12 text-white
+                   min-h-[120px] sm:min-h-[200px] md:min-h-screen"
+      >
+        {/* Logo — always visible */}
+        <div className="text-3xl md:text-5xl font-extrabold tracking-tight">
+          🛍️ ShopNest
+        </div>
+
+        {/* Everything below hidden on mobile */}
+        <div className="hidden sm:flex flex-col items-center w-full max-w-sm">
+          <p className="text-xl md:text-2xl font-semibold text-center mt-3 mb-4">
+            Join ShopNest Today!
+          </p>
+          <p className="text-white/80 text-center text-base md:text-lg mb-6">
+            Create your account and start shopping or selling
+            with thousands of vendors across India!
+          </p>
+
+          {/* Features list */}
+          <div className="space-y-3 w-full">
+            {[
+              "🛒 Shop from 500+ Vendors",
+              "💰 Best Prices Guaranteed",
+              "🔒 100% Secure Payments",
+              "🚀 Sell Your Products Easily",
+            ].map((feature, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 * i, duration: 0.5 }}
+                className="flex items-center gap-3 bg-white/10 rounded-xl px-4 py-3"
+              >
+                <span className="text-base">{feature}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Right side — register form */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full md:w-1/2 flex items-center justify-center
+                   bg-gray-50 px-6 sm:px-8 py-8 min-h-screen md:min-h-0"
+      >
+        <div className="w-full max-w-md">
+
+          {/* Form header */}
+          <div className="mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+              Create Account! 🎉
+            </h2>
+            <p className="text-gray-500 mt-2">
+              Join thousands of happy shoppers
+            </p>
+          </div>
+
+          {/* Register form */}
           <Form
             name="register"
             layout="vertical"
             onFinish={onFinish}
             autoComplete="off"
+            size="large"
           >
-            {/* Name input */}
+            {/* Name */}
             <Form.Item
               name="name"
-              label="Name"
+              label={<span className="font-semibold text-gray-700">Full Name</span>}
               rules={[{ required: true, message: "Please input your name!" }]}
             >
-              <Input prefix={<UserOutlined />} placeholder="Full Name" />
+              <Input
+                prefix={<UserOutlined className="text-purple-400" />}
+                placeholder="Enter your full name"
+                className="rounded-lg"
+              />
             </Form.Item>
 
-            {/* Email input */}
+            {/* Email */}
             <Form.Item
               name="email"
-              label="Email"
+              label={<span className="font-semibold text-gray-700">Email</span>}
               rules={[
                 { required: true, message: "Please input your email!" },
                 { type: "email", message: "Enter a valid email!" },
               ]}
             >
-              <Input prefix={<MailOutlined />} placeholder="Email" />
+              <Input
+                prefix={<MailOutlined className="text-purple-400" />}
+                placeholder="Enter your email"
+                className="rounded-lg"
+              />
             </Form.Item>
 
-            {/* Password input */}
+            {/* Password */}
             <Form.Item
               name="password"
-              label="Password"
+              label={<span className="font-semibold text-gray-700">Password</span>}
               rules={[
                 { required: true, message: "Please input your password!" },
                 { min: 6, message: "Password must be at least 6 characters" },
               ]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+              <Input.Password
+                prefix={<LockOutlined className="text-purple-400" />}
+                placeholder="Create a password"
+                className="rounded-lg"
+              />
             </Form.Item>
 
+            {/* Role */}
             <Form.Item
-            name="role"
-            label="Register As"
-            rules={[{required:true,message: "Please select a role!"}]}
-            initialValue="user" // default to user
+              name="role"
+              label={<span className="font-semibold text-gray-700">Register As</span>}
+              rules={[{ required: true, message: "Please select a role!" }]}
+              initialValue="user"
             >
-              <Select>
-                <Select.Option value="user">User</Select.Option>
-                <Select.Option value="vendor">Vendor</Select.Option>
+              <Select size="large">
+                <Select.Option value="user">🛒 Customer</Select.Option>
+                <Select.Option value="vendor">🏪 Vendor</Select.Option>
               </Select>
             </Form.Item>
 
             {/* Submit button */}
-            <Form.Item>
+            <Form.Item className="mt-6">
               <Button
                 type="primary"
                 htmlType="submit"
                 block
                 loading={loading}
-                className="bg-purple-600 hover:bg-purple-700"
+                className="h-12 rounded-lg text-base font-semibold border-none"
               >
-                Register
+                Create Account
               </Button>
             </Form.Item>
 
-            {/* Redirect to login if already registered */}
+            {/* Divider */}
+            <div className="text-center text-gray-400 my-4">
+              ── or ──
+            </div>
+
+            {/* Login link */}
             <p className="text-center text-gray-500">
               Already have an account?{" "}
               <span
-                className="text-purple-600 cursor-pointer hover:underline"
+                className="text-purple-600 font-semibold cursor-pointer hover:underline"
                 onClick={() => navigate("/login")}
               >
-                Login
+                Login here
               </span>
             </p>
           </Form>
-        </Card>
+        </div>
       </motion.div>
     </div>
   )

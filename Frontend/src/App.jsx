@@ -3,7 +3,7 @@ import "./App.css"
 import Navbar from "./components/Navbar";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -12,9 +12,15 @@ import RoleRoute from "./routes/RoleRoute";
 
 
 function App() {
+  const location = useLocation()
+
+  // hiding navbar on login and register pages
+  const hideNavbar = ["/login", "/register"].includes(location.pathname)
+
   return(
     <>
-    <Navbar />
+    {!hideNavbar && <Navbar />} {/* showing navbar only on non-auth pages */}
+    
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<Login />} />

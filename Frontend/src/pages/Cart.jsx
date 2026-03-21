@@ -15,7 +15,7 @@ const Cart = () =>{
     if(cartItems.length === 0){
         return(
             
-            <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-r from-purple-400 via-pink-400 to-red-400">
+            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
                 <Empty description="Your cart is empty" />
                 <button onClick={() => navigate("/")}
                    className="mt-3 px-6 py-2 bg-white text-purple-600 font-semibold rounded-lg hover:bg-gray-100 transition" >
@@ -26,10 +26,14 @@ const Cart = () =>{
     }
 
     return(
-         <div className="min-h-screen px-6 py-6 bg-linear-to-r from-purple-400 via-pink-400 to-red-400">
-            <h2 className="text-3xl font-bold text-center mb-6">Your Cart</h2>
+         <div className="min-h-screen bg-gray-50">
+            {/* Page header */}
+            <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 py-8 px-4 text-center">
+            <h1 className="text-3xl font-extrabold text-white">🛒 Your Cart</h1>
+            <p className="text-white/80 mt-1">{cartItems.length} item{cartItems.length > 1 ? "s" : ""} in your cart</p>
+            </div>
             
-            <div className="max-w-3xl mx-auto space-y-4">
+            <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">
                 {cartItems.map((item) => (
                     <Card key={item._id} className="shadow-lg">
                         <div className="flex items-center gap-4">
@@ -43,9 +47,16 @@ const Cart = () =>{
                                 </p>
                              </div>
                              <div className="flex items-center gap-3">
-                                <button onClick={() => decreaseQty(item._id)}>−</button>
-                                <span>{item.quantity}</span>
-                                <button onClick={() => increaseQty(item._id)}>+</button>
+                                <button onClick={() => decreaseQty(item._id)}
+                                 className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 font-bold transition disabled:opacity-40">
+                                    -
+                                    </button>
+                                <span className="w-6 text-center font-semibold">{item.quantity}</span>
+                                
+                                <button onClick={() => increaseQty(item._id)}
+                                  className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 font-bold transition">
+                                    +
+                                </button>
                              </div>
                              <Button danger onClick={() => removeFromCart(item._id)}>
                                 Remove

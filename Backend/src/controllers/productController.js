@@ -26,22 +26,22 @@ const getAllProducts = async(req, res) =>{
 
 // to create a new product
 const createProduct = async (req, res) => {
-    const {name, description, price, vendor, stock, images} = req.body
+    const {name, description, price, stock, images} = req.body
 
     try{
         const newProduct = new Product({
             name,
             description,
             price,
-            vendor,
+            vendor: req.user.id, // setting vendor from authenticated user
             stock,
             images
         })
         const savedProduct = await newProduct.save() //saving to db
-        res.status(201).json({status: "success", data: savedProduct})
+        res.status(201).json({success: true, data: savedProduct})
     }
     catch(err){
-        res.status(400).json({status:"error",message:err.message})
+        res.status(400).json({success: false, message: err.message})
     }
 }
 

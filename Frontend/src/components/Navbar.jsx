@@ -1,5 +1,5 @@
-import { Badge, Button } from "antd";
-import { ShoppingCartOutlined } from "@ant-design/icons";
+import { Badge, Dropdown } from "antd";
+import { ShoppingCartOutlined, UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -19,34 +19,61 @@ const Navbar = () => {
     navigate("/login"); // redirect to login page
   };
 
+  // dropdown menu items
+  const menuItems = [
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "Logout",
+      danger: true,
+      onClick: handleLogout
+    }
+  ]
+
+   // hiding navbar on auth pages
+  if(["/login", "/register"].includes(location.pathname)) return null
+
   return (
-    <nav className="sticky top-0 z-50 px-6 py-4 flex justify-between items-center
-                    bg-linear-to-r from-purple-600 via-pink-500 to-red-500
+    <nav className="sticky top-0 z-50 px-4 md:px-8 py-3 flex justify-between items-center
+                    bg-gradient-to-r from-purple-600 via-pink-500 to-red-500
                     text-white shadow-lg">
+
       {/* Brand / Logo */}
-      <Link to="/" className="text-2xl font-bold">
-        ShopNest
+      <Link to="/" className="text-xl md:text-2xl font-bold tracking-tight">
+        🛍️ ShopNest
       </Link>
 
-      {/* Right side of navbar */}
-      <div className="flex items-center gap-4">
-        {/* Showing cart icon + logout only if user is logged in and not on login/register page */}
-        {user && location.pathname !== "/login" && location.pathname !== "/register" && (
-          <>
-            {/* Cart Icon with badge */}
-            <Link to="/cart">
-              <Badge count={totalItems} showZero>
-                <ShoppingCartOutlined className="text-2xl cursor-pointer hover:scale-110 transition-transform" />
-              </Badge>
-            </Link>
+      {/* Right side — only show when logged in */}
+      {user && (
+        <div className="flex items-center gap-3 md:gap-5">
 
-            {/* Logout button */}
-            <Button type="default" onClick={handleLogout} className="ml-2 text-black hover:bg-gray-200">
-              Logout
-            </Button>
-          </>
-        )}
-      </div>
+          {/* Cart icon with badge */}
+          {user?.role !== "vendor" && (
+            <Link to="/cart">
+            <Badge count={totalItems} showZero
+              styles={{ indicator: { backgroundColor: '#fff', color: '#7C3AED', fontWeight: 'bold' } }}
+            >
+              <ShoppingCartOutlined className="text-2xl text-white cursor-pointer
+                                               hover:scale-110 transition-transform" />
+            </Badge>
+          </Link>
+          )}
+
+          {/* User profile dropdown with name */}
+          <Dropdown menu={{ items: menuItems }} placement="bottomRight" arrow>
+            <div className="flex items-center gap-2 cursor-pointer
+                            bg-white/20 hover:bg-white/30
+                            transition px-3 py-1.5 rounded-full">
+              <UserOutlined className="text-white" />
+              {/* hide name on very small screens */}
+              <span className="hidden sm:block text-sm font-medium text-white">
+                {user?.name}
+              </span>
+            </div>
+          </Dropdown>
+
+        </div>
+      )}
     </nav>
   )
 }
