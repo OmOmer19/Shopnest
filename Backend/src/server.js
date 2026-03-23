@@ -5,7 +5,10 @@ require('dotenv').config(); //to load .env variables
 //creating express app
 const app = express();
 
-app.use(cors()) //enabling cors
+app.use(cors({
+  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  credentials: true
+})) //enabling cors
 
 app.use(express.json()) //enabling json parsing for request bodies
 
@@ -17,9 +20,11 @@ connectToDB()
 // Importing routes
 const productRoutes = require("./routes/productRoutes");
 const authRoutes = require('./routes/authRoutes')
+const orderRoutes = require('./routes/orderRoutes')
 
 app.use("/api/products", productRoutes);
 app.use("/api/auth",authRoutes)
+app.use("/api/orders", orderRoutes)
 
 app.get("/", (req, res) => {
   res.send("ShopNest API is working fine!");

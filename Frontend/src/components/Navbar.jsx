@@ -48,6 +48,12 @@ const Navbar = () => {
       {user && (
         <div className="flex items-center gap-3 md:gap-5">
 
+          {user?.role === "user" && (
+            <Link to="/orders"
+                  className="text-white text-sm hover:underline">
+                   My Orders </Link>
+             )}
+
           {/* Cart icon with badge */}
           {user?.role !== "vendor" && (
             <Link to="/cart">

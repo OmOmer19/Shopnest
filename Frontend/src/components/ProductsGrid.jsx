@@ -1,5 +1,5 @@
 import { useEffect,useState } from "react";
-import { Input, Skeleton, Empty } from "antd";
+import { Input, Skeleton, Empty, Slider } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import api from "../api/api";
 import ProductCard from "./ProductCard";
@@ -9,6 +9,8 @@ const ProductsGrid = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("") //search query
+  const [priceRange, setPriceRange] = useState([0, 10000]) // price filter range
+  const [maxPrice, setMaxPrice] = useState(10000) // max price from products initial value
 
   // Fetch products from backend
   useEffect(() => {
@@ -16,7 +18,13 @@ const ProductsGrid = () => {
       try {
         const res = await api.get("/products");
         setProducts(res.data.data);
-      } catch (error) {
+
+        // setting max price dynamically according to max price product value
+        const max = Math.max(...res.data.data.map(p => p.price))
+        setMaxPrice(max)
+        setPriceRange([0,max])
+      } 
+      catch (error) {
         console.error("Failed to fetch products:", error);
       }
       finally {
@@ -28,8 +36,10 @@ const ProductsGrid = () => {
 
   // filtering products based on search query
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(search.toLowerCase()) ||
-    product.vendor.name.toLowerCase().includes(search.toLowerCase())
+    (product.name.toLowerCase().includes(search.toLowerCase()) ||
+    product.vendor.name.toLowerCase().includes(search.toLowerCase())) &&
+    product.price >= priceRange[0] &&
+    product.price <= priceRange[1]
   )
 
   return (
@@ -52,6 +62,24 @@ const ProductsGrid = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="rounded-full px-4 shadow-lg"
+          />
+        </div>
+        {/* price range filter — add here */}
+        <div className="max-w-xl mx-auto mt-4">
+          <p className="text-white/80 text-sm mb-2 text-center">
+            Price: ₹{priceRange[0].toLocaleString('en-IN')} — ₹{priceRange[1].toLocaleString('en-IN')}
+          </p>
+          <Slider
+            range
+            min={0}
+            max={maxPrice}
+            value={priceRange}
+            onChange={(value) => setPriceRange(value)}
+            styles={{
+              track: { backgroundColor: 'white' },
+              rail: { backgroundColor: 'rgba(255,255,255,0.3)' },
+              handle: { borderColor: 'white', backgroundColor: 'white' }
+            }}
           />
         </div>
       </div>

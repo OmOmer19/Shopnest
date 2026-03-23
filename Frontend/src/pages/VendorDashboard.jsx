@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react"
-import { Layout, Card, Table, Button, Form, Input, InputNumber, message } from "antd"
-import { DashboardOutlined, AppstoreOutlined, PlusCircleOutlined, ShopOutlined } from "@ant-design/icons";
+import { Layout, Card, Table, Button, Form, Input, InputNumber, message, Modal, Popconfirm } from "antd"
+import { DashboardOutlined, ShopOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthContext"
 import api from "../api/api"
 
+
+const { Content } = Layout
 
 const VendorDashboard = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard") // active menu item
@@ -12,8 +14,10 @@ const VendorDashboard = () => {
   const [addingProduct, setAddingProduct] = useState(false) // add product loading
   const { user } = useAuth()
   const [form] = Form.useForm()
+  const [editForm] = Form.useForm() // edit form instance
+  const [editingProduct, setEditingProduct] = useState(null) // product being edited
+  const [editModalOpen, setEditModalOpen] = useState(false) // edit modal visibility
 
-  const { Content } = Layout
 
   // fetching vendor's products on mount
   useEffect(() => {
@@ -56,6 +60,45 @@ const VendorDashboard = () => {
     }
   }
 
+  // opening edit modal with product data
+  const handleEditClick = (product) => {
+       setEditingProduct(product)
+       editForm.setFieldsValue({
+             name: product.name,
+             description: product.description,
+             price: product.price,
+             stock: product.stock,
+             images: product.images?.[0] || ""
+             })
+             setEditModalOpen(true)
+             }
+
+ // saving edited product
+const handleEditProduct = async (values) => {
+  try {
+    await api.put(`/products/${editingProduct._id}`, {
+      ...values,
+      images: [values.images]
+    })
+    message.success("Product updated successfully!")
+    setEditModalOpen(false)
+    fetchMyProducts()
+  } catch (error) {
+    message.error(error.response?.data?.message || "Failed to update product")
+  }
+}
+
+    // deleting a product
+const handleDeleteProduct = async (productId) => {
+  try {
+    await api.delete(`/products/${productId}`)
+    message.success("Product deleted successfully!")
+    fetchMyProducts()
+  } catch (error) {
+    message.error(error.response?.data?.message || "Failed to delete product")
+  }
+  }
+
   // table columns for products list
   const columns = [
     {
@@ -81,6 +124,34 @@ const VendorDashboard = () => {
       key: "rating",
       render: (rating) => rating > 0 ? `⭐ ${rating}` : "No ratings"
     },
+    {
+  title: "Actions",
+  key: "actions",
+  render: (_, record) => (
+    <div className="flex gap-2">
+      <Button
+        icon={<EditOutlined />}
+        size="small"
+        onClick={() => handleEditClick(record)}
+        className="text-purple-600 border-purple-600"
+      >
+        Edit
+      </Button>
+      <Popconfirm
+        title="Delete Product"
+        description="Are you sure you want to delete this product?"
+        onConfirm={() => handleDeleteProduct(record._id)}
+        okText="Yes, Delete"
+        cancelText="Cancel"
+        okButtonProps={{ danger: true }}
+      >
+        <Button icon={<DeleteOutlined />} size="small" danger>
+          Delete
+        </Button>
+      </Popconfirm>
+    </div>
+  )
+  }
   ]
 
   // rendering content based on selected menu key
@@ -250,6 +321,42 @@ const VendorDashboard = () => {
       <Content className="p-4 md:p-6">
         {renderContent()}
       </Content>
+
+      {/* edit product modal */}
+      <Modal
+        title="Edit Product"
+        open={editModalOpen}
+        onCancel={() => setEditModalOpen(false)}
+        footer={null}
+      >
+        <Form form={editForm} layout="vertical" onFinish={handleEditProduct}>
+          <Form.Item name="name" label="Product Name"
+            rules={[{ required: true, message: "Please enter product name" }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="description" label="Description"
+            rules={[{ required: true, message: "Please enter description" }]}>
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item name="price" label="Price (₹)"
+            rules={[{ required: true, message: "Please enter price" }]}>
+            <InputNumber min={1} className="w-full" />
+          </Form.Item>
+          <Form.Item name="stock" label="Stock"
+            rules={[{ required: true, message: "Please enter stock" }]}>
+            <InputNumber min={0} className="w-full" />
+          </Form.Item>
+          <Form.Item name="images" label="Image URL"
+            rules={[{ required: true, message: "Please enter image URL" }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Save Changes
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
 
     </Layout>
   </Layout>

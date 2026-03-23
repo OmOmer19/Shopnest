@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import VendorDashboard from "./pages/VendorDashboard";
 import RoleRoute from "./routes/RoleRoute";
+import Orders from "./pages/Orders"
 
 
 function App() {
@@ -41,6 +42,11 @@ function App() {
       <Route path="/checkout" 
       element={ <ProtectedRoute>
         <Checkout />
+      </ProtectedRoute>} />
+
+      <Route path="/orders" 
+      element={ <ProtectedRoute>
+        <Orders />
       </ProtectedRoute>} />
 
       {/* role based routes */}
